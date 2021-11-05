@@ -2,26 +2,39 @@ package com.example.demo;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import java.time.Duration;
+
+import org.junit.jupiter.api.*;
+
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) //해당 클래스 전역에 이름에 _를 공백으로 치완한다.
 class StudyTest {
 
 	@Test
-	@DisplayName("╯°□°）╯") //test이름을 원하는 문자로 변경 할 수 있다. 이게 더 좋아보임
+	@DisplayName("스터디 만들기 ╯°□°）╯") //test이름을 원하는 문자로 변경 할 수 있다. 이게 더 좋아보임
 	void test() {
 		//fail("Not yet implemented");
 		
-		Study study = new Study();
-		assertNotNull(study); //객체가 Null이 아닐경우 true
+		assertTimeout(Duration.ofMillis(300), () -> { //300밀리초를 설정하여 테스트를 진행
+			new Study(10); //구문중 실행이 300밀리초 내에 끝나야 함
+			Thread.sleep(300); //쓰레드에 300밀리초의 딜레이를 줌으로써 예외를 발생시켜본다.
+		});
+		
+		/*
+		IllegalArgumentException exception =
+				assertThrows(IllegalArgumentException.class, ()-> new Study(-10));
+		String message = exception.getMessage();
+		assertEquals("limit은 0보다 커야 한다.", exception.getMessage());
+		*/
+		/*
+		Study study = new Study(-10);
+		assertAll(
+				()-> assertNotNull(study), //객체가 Null인지 아닌지 확인
+				()-> assertEquals(StudyStatus.DRAFT , study.getStatus(),
+						() -> "대충 메시지를 넣을 수 있다는 내용"), //실제 값이 기대한 값과 같은지 확인, Status가 Null이면 에러가 난다,
+				()-> assertTrue(study.getLimit() > 0, "스터디 참가인원은 0보다 커야 한다.")
+		);
+		*/
 		System.out.println("test1");
 	}
 	
