@@ -1,10 +1,19 @@
 package com.example.demo;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.Duration;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) //해당 클래스 전역에 이름에 _를 공백으로 치완한다.
@@ -12,14 +21,31 @@ class StudyTest {
 
 	@Test
 	@DisplayName("스터디 만들기 ╯°□°）╯") //test이름을 원하는 문자로 변경 할 수 있다. 이게 더 좋아보임
+	@EnabledOnOs(OS.WINDOWS)
+	@EnabledOnJre(value = JRE.JAVA_8)
+	@EnabledIfSystemProperty(named = "java.version", matches = "1.8.0_202")
+	@EnabledIfSystemProperty(named = "java.vendor", matches = "Oracle Corporation")
+	@EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
 	void test() {
 		//fail("Not yet implemented");
+		Study actual = new Study(10);	//생성자 만들기
+
+		System.out.println(System.getProperty("java.version"));
+		System.out.println(System.getProperty("java.vendor"));
+		System.out.println(System.getProperty("java.home"));
 		
+		String test_env = System.getenv("TEST_ENV");
+		System.out.println(test_env);
+		assumeTrue("LOCAL".equalsIgnoreCase(test_env));	//로컬인 경우에만 테스트를 실행한다.(조건)
+		
+		assumingThat("LOCAL".equalsIgnoreCase(test_env), ()-> assertThat(actual.getLimit()).isGreaterThan(0));
+		
+		/*
 		assertTimeout(Duration.ofMillis(300), () -> { //300밀리초를 설정하여 테스트를 진행
 			new Study(10); //구문중 실행이 300밀리초 내에 끝나야 함
 			Thread.sleep(300); //쓰레드에 300밀리초의 딜레이를 줌으로써 예외를 발생시켜본다.
 		});
-		
+		*/
 		/*
 		IllegalArgumentException exception =
 				assertThrows(IllegalArgumentException.class, ()-> new Study(-10));
