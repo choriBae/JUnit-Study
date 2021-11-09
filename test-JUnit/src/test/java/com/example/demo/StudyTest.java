@@ -26,6 +26,8 @@ class StudyTest {
 	@EnabledIfSystemProperty(named = "java.version", matches = "1.8.0_202")
 	@EnabledIfSystemProperty(named = "java.vendor", matches = "Oracle Corporation")
 	@EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+	//@Tag("fast")
+	@FastTest
 	void test() {
 		//fail("Not yet implemented");
 		Study actual = new Study(10);	//생성자 만들기
@@ -37,7 +39,7 @@ class StudyTest {
 		String test_env = System.getenv("TEST_ENV");
 		System.out.println(test_env);
 		assumeTrue("LOCAL".equalsIgnoreCase(test_env));	//로컬인 경우에만 테스트를 실행한다.(조건)
-		
+		 
 		assumingThat("LOCAL".equalsIgnoreCase(test_env), ()-> assertThat(actual.getLimit()).isGreaterThan(0));
 		
 		/*
@@ -65,6 +67,8 @@ class StudyTest {
 	}
 	
 	@Test
+	//@Tag("slow")
+	@SlowTest
 	//@Disabled //사용하지 않는 메서드일 경우에 disabled한다.
 	void test2_tt_pp() {
 		//fail("Not yet implemented");
