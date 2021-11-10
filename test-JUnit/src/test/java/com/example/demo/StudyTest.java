@@ -14,6 +14,16 @@ import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.converter.SimpleArgumentConverter;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Value;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) //해당 클래스 전역에 이름에 _를 공백으로 치완한다.
@@ -23,9 +33,9 @@ class StudyTest {
 	@DisplayName("스터디 만들기 ╯°□°）╯") //test이름을 원하는 문자로 변경 할 수 있다. 이게 더 좋아보임
 	@EnabledOnOs(OS.WINDOWS)
 	@EnabledOnJre(value = JRE.JAVA_8)
-	@EnabledIfSystemProperty(named = "java.version", matches = "1.8.0_202")
-	@EnabledIfSystemProperty(named = "java.vendor", matches = "Oracle Corporation")
-	@EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+	//@EnabledIfSystemProperty(named = "java.version", matches = "1.8.0_202")
+	//@EnabledIfSystemProperty(named = "java.vendor", matches = "Oracle Corporation")
+	//@EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
 	//@Tag("fast")
 	@FastTest
 	void test() {
@@ -66,14 +76,45 @@ class StudyTest {
 		System.out.println("test1");
 	}
 	
+	@DisplayName("반목문 테스트1")
+	@RepeatedTest(value = 10, name = "{displayName}, {currentRepetition}/{totalRepetitions}")	//value = 반복횟수, name = 테스트명
+	void repeatedTest(RepetitionInfo repetitionInfo) {	//RepetitionInfo 인자를 통해서 몇번째 반복되고 있는지 확인 할 수 있다.
+		System.out.println("test" + repetitionInfo.getCurrentRepetition() + "/" 
+							+ repetitionInfo.getTotalRepetitions());
+	}
+	
+	@DisplayName("반목문 테스트2")
+	@ParameterizedTest(name = "{index} {displayName} message={0}") //매개변수(파라미터)를 index(0,1,2)로 참조할 수 있다.
+	//@ValueSource(strings = {"반복문","테스트"})
+	@ValueSource(ints = {10, 20, 40})
+	//@CsvSource({"java, 10,", ""}) //여러 인자를 콤마로 구분해서 파라미터로 넘겨줄 수 있다.
+	//@EmptySource //비어있는 문자열의 인자를 하나 더 추가한다.
+	//@NullSource //Null의 인자를 하나 더 추가해준다.
+	//@NullAndEmptySource //Null과 비어있는 문자열을 하나 씩 추가한다.
+	void parameterizedTest1(@ConvertWith(StudyConverter.class) Study study) {	//여러 파라미터들을 반복 테스트할 수 있는 방법  / 내가 만든 타입으로 매개변수를 만들어 인자를 받을 수 있다.
+		System.out.println(study.getLimit());
+	}
+	
+	static class StudyConverter extends SimpleArgumentConverter {
+
+		@Override
+		protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+			assertEquals(Study.class, targetType, "Can only convert to Study");
+			return new Study(Integer.parseInt(source.toString()));
+		}
+		
+	}
+
+	/*
 	@Test
 	//@Tag("slow")
 	@SlowTest
-	//@Disabled //사용하지 않는 메서드일 경우에 disabled한다.
+	@Disabled //사용하지 않는 메서드일 경우에 disabled한다.
 	void test2_tt_pp() {
 		//fail("Not yet implemented");
 		System.out.println("test2");
 	}
+	*/
 	
 	@BeforeAll	//모든 test코드가 실행되기 전에 딱 한번 호출된다.
 	static void beforeAll() { //BeforeAll을 구현할 때는 static을 사용해야 한다, 리턴 타입이 존재할 수 없고 void만 가능하다.
