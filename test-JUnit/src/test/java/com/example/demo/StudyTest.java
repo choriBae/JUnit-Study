@@ -94,10 +94,24 @@ class StudyTest {
 	//@NullSource //Null의 인자를 하나 더 추가해준다.
 	//@NullAndEmptySource //Null과 비어있는 문자열을 하나 씩 추가한다.
 	//void parameterizedTest(@ConvertWith(StudyConverter.class) Study study) {	//여러 파라미터들을 반복 테스트할 수 있는 방법  / 내가 만든 타입으로 매개변수를 만들어 인자를 받을 수 있다.
-	void parameterizedTest(String massage) {	//여러 파라미터들을 반복 테스트할 수 있는 방법  / 내가 만든 타입으로 매개변수를 만들어 인자를 받을 수 있다.
+	void parameterizedTest1(String massage) {	//여러 파라미터들을 반복 테스트할 수 있는 방법  / 내가 만든 타입으로 매개변수를 만들어 인자를 받을 수 있다.
 		//Study study = new Study(limit, name)
 		//System.out.println(study.getLimit());
 		System.out.println(massage);
+	}
+	
+	@DisplayName("반목문 테스트3")
+	@ParameterizedTest(name = "{index} {displayName} message={0}") //매개변수(파라미터)를 index(0,1,2)로 참조할 수 있다.
+	@ValueSource(ints = {10, 20, 40}) //여러 인자를 콤마로 구분해서 파라미터로 넘겨줄 수 있다.
+	void parameterizedTest2(Integer limit) {
+		System.out.println(limit);
+	}
+	
+	@DisplayName("반목문 테스트4")
+	@ParameterizedTest(name = "{index} {displayName} message={0}")
+	@CsvSource({"10, '자바 스터디'", "20, '스프링'"}) //여러 인자를 콤마로 구분해서 파라미터로 넘겨줄 수 있다.
+	void parameterizedTest3(@ConvertWith(StudyConverter.class) Study study) {	//여러 파라미터들을 반복 테스트할 수 있는 방법  / 내가 만든 타입으로 매개변수를 만들어 인자를 받을 수 있다.
+		System.out.println(study.getLimit());
 	}
 	
 	static class StudyConverter extends SimpleArgumentConverter {
