@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 import static org.mockito.Mockito.lenient;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) //해당 클래스 전역에 이름에 _를 공백으로 치완한다.
 @TestInstance(Lifecycle.PER_CLASS) //클래스 마다 인스턴스를 생성하기 때문에, 이 클래스에 있는 모든 메서드가 하나의 인스턴스를 공유하게 된다.
+@TestMethodOrder(OrderAnnotation.class)
 class StudyTest {
 
 	int value = 1;
@@ -86,6 +88,7 @@ class StudyTest {
 		System.out.println("test1");
 	}
 	
+	@Order(2)
 	//테스트 간 의존성을 없게 만들어야 한다.
 	//의존성이 있을 경우 실행순서에 문제가 생긴다.
 	@Test
@@ -97,6 +100,7 @@ class StudyTest {
 		assertThat(actual.getLimit()).isGreaterThan(0);
 	}
 	
+	@Order(1)
 	@Test
 	//@Tag("slow")
 	@SlowTest
@@ -107,6 +111,7 @@ class StudyTest {
 		System.out.println(value++);
 	}
 	
+	@Order(5)
 	@DisplayName("반목문 테스트1")
 	@RepeatedTest(value = 10, name = "{displayName}, {currentRepetition}/{totalRepetitions}")	//value = 반복횟수, name = 테스트명
 	@EmptySource //비어있는 문자열의 인자를 하나 더 추가한다.
@@ -116,6 +121,7 @@ class StudyTest {
 							+ repetitionInfo.getTotalRepetitions());
 	}
 	
+	@Order(4)
 	@DisplayName("반목문 테스트2")
 	@ParameterizedTest(name = "{index} {displayName} message={0}") //매개변수(파라미터)를 index(0,1,2)로 참조할 수 있다.
 	@ValueSource(strings = {"반복문","테스트"})
